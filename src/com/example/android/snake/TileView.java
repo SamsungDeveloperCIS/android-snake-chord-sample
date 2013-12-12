@@ -16,13 +16,15 @@
 
 package com.example.android.snake;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -51,7 +53,7 @@ public class TileView extends View {
      * A hash that maps integer handles specified by the subclasser to the drawable that will be
      * used for that reference
      */
-    private Bitmap[] mTileArray;
+    protected Bitmap[] mTileArray;
 
     /**
      * A two-dimensional array of integers in which the number represents the index of the tile that
@@ -62,19 +64,17 @@ public class TileView extends View {
     public TileView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TileView);
-        mTileSize = a.getDimensionPixelSize(R.styleable.TileView_tileSize, 12);
-
-        a.recycle();
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        mTileSize = Math.round(dm.widthPixels / 16);
     }
 
     public TileView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TileView);
-        mTileSize = a.getDimensionPixelSize(R.styleable.TileView_tileSize, 12);
-
-        a.recycle();
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        mTileSize = Math.round(dm.widthPixels / 16);
 
     }
 
@@ -146,6 +146,14 @@ public class TileView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mXTileCount = (int) Math.floor(w / mTileSize);
         mYTileCount = (int) Math.floor(h / mTileSize);
+        
+        if (mXTileCount > 16) {
+        	mXTileCount = 16;
+        }
+        
+        if (mYTileCount > 25) {
+        	mYTileCount = 25;
+        }
 
         mXOffset = ((w - (mTileSize * mXTileCount)) / 2);
         mYOffset = ((h - (mTileSize * mYTileCount)) / 2);

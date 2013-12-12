@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2007 The Android Open Source Project
+<!--
+     Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,69 +16,126 @@
 -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res/com.example.android.snake">
+    xmlns:app="http://schemas.android.com/apk/res/com.example.android.snake" >
 
-  <com.example.android.snake.BackgroundView
-    android:id="@+id/background"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:colorSegmentOne="@color/muted_red"
-    app:colorSegmentTwo="@color/muted_yellow"
-    app:colorSegmentThree="@color/muted_blue"
-    app:colorSegmentFour="@color/muted_green"
-     />
+    <com.example.android.snake.BackgroundView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:colorSegmentFour="@color/muted_green"
+        app:colorSegmentOne="@color/muted_red"
+        app:colorSegmentThree="@color/muted_blue"
+        app:colorSegmentTwo="@color/muted_yellow" />
 
-  <com.example.android.snake.SnakeView
-    android:id="@+id/snake"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:tileSize="24dp" />
+    <com.example.android.snake.SnakeView
+        android:id="@+id/snake"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:tileSize="10px" />
 
-  <TextView android:id="@+id/text"
-  android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:textColor="@color/text_violet"
-    android:textSize="24sp"
-    android:visibility="visible" />
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/text_violet"
+        android:textSize="24sp"
+        android:visibility="gone" />
 
-  <RelativeLayout android:id="@+id/arrowContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="gone">
+    <RelativeLayout
+        android:id="@+id/arrowContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" >
 
-    <ImageView android:id="@+id/imageUp"
-    android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentTop="true"
-      android:layout_centerHorizontal="true"
-      android:padding="20dp"
-      android:src="@drawable/dpad_up" />
+        <ImageView
+            android:id="@+id/imageUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:padding="20dp"
+            android:src="@drawable/dpad_up" />
 
-    <ImageView android:id="@+id/imageLeft"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:layout_centerVertical="true"
-      android:padding="20dp"
-      android:src="@drawable/dpad_left" />
+        <ImageView
+            android:id="@+id/imageLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:padding="20dp"
+            android:src="@drawable/dpad_left" />
 
-    <ImageView android:id="@+id/imageRight"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentRight="true"
-      android:layout_centerVertical="true"
-      android:padding="20dp"
-      android:src="@drawable/dpad_right" />
+        <ImageView
+            android:id="@+id/imageRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="20dp"
+            android:src="@drawable/dpad_right" />
 
-    <ImageView android:id="@+id/imageDown"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:layout_centerHorizontal="true"
-      android:padding="20dp"
-      android:src="@drawable/dpad_down" />
-  </RelativeLayout>
+        <ImageView
+            android:id="@+id/imageDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:padding="20dp"
+            android:src="@drawable/dpad_down" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/playersContainer"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:padding="16dp"
+        android:visibility="visible"
+        android:background="@android:color/holo_blue_dark" >
+
+        <TextView
+            android:id="@+id/playersTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Please confirm that you are ready"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <CheckBox
+            android:id="@+id/iamready"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/playersTitle"
+            android:checked="false"
+            android:text="I am ready" />
+
+        <LinearLayout
+            android:id="@+id/playersList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/iamready"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Please wait other players" 
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/mycolor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/iamready"
+            android:layout_alignRight="@+id/playersList"
+            android:layout_marginBottom="6dp"
+            android:src="@drawable/customstar1" />
+
+    </RelativeLayout>
 
 </merge>

@@ -16,8 +16,14 @@
 
 package com.example.android.snake;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Set;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,9 +31,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * SnakeView: implementation of a simple game of Snake
@@ -59,10 +62,15 @@ public class SnakeView extends TileView {
     /**
      * Labels for the drawables that will be loaded into the TileView class
      */
-    private static final int RED_STAR = 1;
-    private static final int YELLOW_STAR = 2;
-    private static final int GREEN_STAR = 3;
-
+    public static final int RED_STAR = 1;
+    public static final int YELLOW_STAR = 2;
+    public static final int GREEN_STAR = 3;
+    public static final int CUSTOM_STAR_1 = 4;
+    public static final int CUSTOM_STAR_2 = 5;
+    public static final int CUSTOM_STAR_3 = 6;
+    public static final int CUSTOM_STAR_4 = 7;
+    public static final int CUSTOM_STAR_5 = 8;
+    
     /**
      * mScore: Used to track the number of apples captured mMoveDelay: number of milliseconds
      * between snake movements. This will decrease as apples are captured.
@@ -125,6 +133,12 @@ public class SnakeView extends TileView {
         }
     };
 
+    
+//    private ArrayList<SnakePlayer> mSnakePlayers = new ArrayList<SnakePlayer>();
+    private HashMap<String, SnakePlayer> mPlayers = new HashMap<String, SnakePlayer>();
+    
+    public int color = YELLOW_STAR;
+    
     /**
      * Constructs a SnakeView based on inflation from XML
      * 
@@ -147,11 +161,16 @@ public class SnakeView extends TileView {
 
         Resources r = this.getContext().getResources();
 
-        resetTiles(4);
+        resetTiles(9);
         loadTile(RED_STAR, r.getDrawable(R.drawable.redstar));
         loadTile(YELLOW_STAR, r.getDrawable(R.drawable.yellowstar));
         loadTile(GREEN_STAR, r.getDrawable(R.drawable.greenstar));
-
+        loadTile(CUSTOM_STAR_1, r.getDrawable(R.drawable.customstar1));
+        loadTile(CUSTOM_STAR_2, r.getDrawable(R.drawable.customstar2));
+        loadTile(CUSTOM_STAR_3, r.getDrawable(R.drawable.customstar3));
+        loadTile(CUSTOM_STAR_4, r.getDrawable(R.drawable.customstar4));
+        loadTile(CUSTOM_STAR_5, r.getDrawable(R.drawable.customstar5));
+        
     }
 
     private void initNewGame() {
@@ -175,6 +194,83 @@ public class SnakeView extends TileView {
 
         mMoveDelay = 600;
         mScore = 0;
+    }
+    
+    public int[] getAppleCoordinates() {
+    	return coordArrayListToArray(mAppleList);
+    }
+    
+    public Bitmap[] getTileArray() {
+    	return mTileArray;
+    }
+    
+    public int[] getSnakeTrailCoordinates() {
+    	return coordArrayListToArray(mSnakeTrail);
+    }
+    
+    public int getDirection() {
+    	return mNextDirection;
+    }
+    
+    public long getMoveDelay() {
+    	return mMoveDelay;
+    }
+
+    public void updatePlayers(HashMap<String, SnakePlayer> players) {
+    	mPlayers = players;
+    	updateSnakePlayers();
+    }
+    
+    private void updateSnakePlayers() {
+    	Set<String> keySet = mPlayers.keySet();
+    	for (String node : keySet) {
+			SnakePlayer p = mPlayers.get(node);
+			Log.i("","mPlayers p="+p.toString());
+			if (p.mSnakeTrail.size() == 0 || p.ready == false) {
+				continue;
+			}
+			Coordinate head = p.mSnakeTrail.get(0);
+	        Coordinate newHead = new Coordinate(1, 1);
+			switch (p.direction) {
+	            case EAST: {
+	                newHead = new Coordinate(head.x + 1, head.y);
+	                break;
+	            }
+	            case WEST: {
+	                newHead = new Coordinate(head.x - 1, head.y);
+	                break;
+	            }
+	            case NORTH: {
+	                newHead = new Coordinate(head.x, head.y - 1);
+	                break;
+	            }
+	            case SOUTH: {
+	                newHead = new Coordinate(head.x, head.y + 1);
+	                break;
+	            }
+	        }
+			
+			// Collision detection
+	        // For now we have a 1-square wall around the entire arena
+	        if ((newHead.x < 1) || (newHead.y < 1) || (newHead.x > mXTileCount - 2)
+	                || (newHead.y > mYTileCount - 2)) {
+	        	p.ready = false;
+	            continue;
+	        }
+			
+			p.mSnakeTrail.add(0, newHead);
+	        p.mSnakeTrail.remove(p.mSnakeTrail.size() - 1);
+	        int index = 0;
+	        for (Coordinate c : p.mSnakeTrail) {
+	            if (index == 0) {
+	                setTile(p.color, c.x, c.y);
+	            } else {
+	                setTile(RED_STAR, c.x, c.y);
+	            }
+	            index++;
+	        }
+		}
+    	
     }
 
     /**
@@ -375,7 +471,7 @@ public class SnakeView extends TileView {
      * Currently _could_ go into an infinite loop if the snake currently fills the garden, but we'll
      * leave discovery of this prize to a truly excellent snake-player.
      */
-    private void addRandomApple() {
+    public void addRandomApple() {
         Coordinate newCoord = null;
         boolean found = false;
         while (!found) {
@@ -415,6 +511,7 @@ public class SnakeView extends TileView {
                 clearTiles();
                 updateWalls();
                 updateSnake();
+                updateSnakePlayers();
                 updateApples();
                 mLastMove = now;
             }
@@ -507,7 +604,7 @@ public class SnakeView extends TileView {
                 addRandomApple();
 
                 mScore++;
-                mMoveDelay *= 0.9;
+//                mMoveDelay *= 0.9;
 
                 growSnake = true;
             }
@@ -523,7 +620,7 @@ public class SnakeView extends TileView {
         int index = 0;
         for (Coordinate c : mSnakeTrail) {
             if (index == 0) {
-                setTile(YELLOW_STAR, c.x, c.y);
+                setTile(this.color, c.x, c.y);
             } else {
                 setTile(RED_STAR, c.x, c.y);
             }
@@ -531,31 +628,4 @@ public class SnakeView extends TileView {
         }
 
     }
-
-    /**
-     * Simple class containing two integer values and a comparison function. There's probably
-     * something I should use instead, but this was quick and easy to build.
-     */
-    private class Coordinate {
-        public int x;
-        public int y;
-
-        public Coordinate(int newX, int newY) {
-            x = newX;
-            y = newY;
-        }
-
-        public boolean equals(Coordinate other) {
-            if (x == other.x && y == other.y) {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "Coordinate: [" + x + "," + y + "]";
-        }
-    }
-
 }
